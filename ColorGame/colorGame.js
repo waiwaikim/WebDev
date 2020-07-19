@@ -24,8 +24,8 @@ function init(){
             reset();
         }); 
     }
-    for (let i = 0; i < squares.length; i++) {
 
+    for (let i = 0; i < squares.length; i++) {
         squares[i].addEventListener("click", function(){
             var clicked_color = this.style.backgroundColor;
     
@@ -42,7 +42,6 @@ function init(){
             }
         })
     }
-    
     reset();
 }
 
