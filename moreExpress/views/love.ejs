@@ -1,0 +1,12 @@
+<%- include('../partials/header') %>
+
+<h1>You have fallen in love with <%=loveVar.toUpperCase() %> </h1>
+
+
+<!-- template! -->
+<% if(loveVar.toLowerCase() === 'climbing'){ %>
+    <p>Gooood Callll!</p>
+<% } else {%>
+    <p>You have made a bad choice!</p>
+<% } %>
+<%- include('../partials/footer') %>
