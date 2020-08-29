@@ -1,0 +1,31 @@
+<%- include('../partials/header')%>
+
+<div class="container">
+    <div class="row" id="form title" >
+        <h1 style="text-align: center;" >Add a new climbing gym</h1>
+    </div>
+    <div class="row">
+        <div style="width: 30%; margin: 30px auto; ">
+            <form action="/climbinggyms" method="POST">
+                <div class="form-group">
+                    <input class="form-control" type="text" name="name" placeholder="name">
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="text" name="image" placeholder="image url">
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="text" name="description" placeholder="description">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-lg btn-outline-dark btn-block">submit</button>
+                </div>
+            </form>
+            <a href="/climbinggyms">Go Back</a>
+        </div>
+    </div>
+
+    
+</div>
+
+
+<%- include('../partials/footer')%>

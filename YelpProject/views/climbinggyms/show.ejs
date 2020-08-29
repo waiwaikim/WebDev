@@ -1,0 +1,52 @@
+<%- include('../partials/header')%>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <p class="lead">
+                YelpClimbingGym
+            </p>
+            <div class="list-group">
+                <li class="list-group-item active">Info 1</li>
+                <li class="list-group-item">Info 2</li>
+                <li class="list-group-item">Info 3</li>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="img-thumbnail">
+                <img class="img-responsive" src="<%= gyms.image%>" alt="">
+                <div class="caption-full">
+                    <h4 class="float-right">$19.00/day</h4>
+                    <h1><a href=""><%= gyms.name%></a> </h1>
+                    <p><%= gyms.description %></p>
+                </div>
+            </div>
+            <div class="card card-body bg-light">
+                <div class="text-right">
+                    <a class="btn btn-primary" href="/climbinggyms/<%=gyms._id%>/comments/new">Add Comment</a>
+                </div>
+                <hr>
+                <% gyms.comments.forEach(comment => { %> 
+                    <div class="row">
+                        <div class="col-md-12">
+                            <strong><%=comment.author %> </strong>
+                            <span class="float-right"> 10 days ago</span>
+                            <p>
+                                <%= comment.text%> 
+                            </p>
+                        </div>
+                    </div>
+                <% });%>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<%- include('../partials/footer')%>
