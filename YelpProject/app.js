@@ -3,19 +3,41 @@ const express = require('express'),
       app = express(),
       bodyParser = require('body-parser'),
       mongoose = require('mongoose'),
+      seedDB = require('./seeds'),
+      passport = require('passport'),
+      LocalStrategy = require('passport-local'),
+      session = require('express-session'),
+      User = require('./models/user'),
       Climbinggym = require('./models/climbinggym'),
       Comment = require('./models/comment'),
-      seedDB = require('./seeds');
+      methodOverride = require('method-override');
 
-
+//Requiring Routes 
+const climbinggymRoutes = require('./routes/climbinggyms'),
+      commentRoutes = require('./routes/comments'),
+      authRoutes = require('./routes/index');
+      
 const port = 3000;
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(__dirname + '/public'));
-console.log(__dirname);
+app.use(methodOverride('_method'));
+
+//===============PASSPORT CONFIGURATION ====================
+app.use(session({
+    secret: 'I want to work at a ski resort this winter',
+    resave: false,
+    saveUninitialized: false 
+}));
+passport.use(new LocalStrategy(User.authenticate()));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 
 //seedDB();
-//Connecting to DB  
+//===================Connecting to DB ==================
 mongoose.connect('mongodb://localhost:27017/yelp_camp',{
     useNewUrlparse: true,
     useUnifiedTopology: true
@@ -25,105 +47,14 @@ mongoose.connect('mongodb://localhost:27017/yelp_camp',{
 
 
 
-
-app.get('/', (req,res)=>{
-
-    res.render('landing');
+app.use(function(req, res, next){
+    res.locals.currentUser = req.user; 
+    next();
 })
 
-//INDEX
-app.get('/climbinggyms', (req, res)=>{
-
-    //Get all climbing gyms from DB 
-    Climbinggym.find({}, (err, allClimbingGyms)=>{
-        if(err){
-            console.log(err);
-        }
-        else{
-            console.log()
-            res.render('climbinggyms/index', {gyms: allClimbingGyms});
-        }
-    })
-})
-
-//CREATE
-app.post('/climbinggyms', (req, res)=> {
-    const name = req.body.name;
-    const url = req.body.image; 
-    const desc = req.body.description;
-    const newClimbingGym = {name: name, image: url, description: desc};
-
-    //Database! 
-    //Create a new climbing gym and save to DB
-    Climbinggym.create(newClimbingGym, (err, newlyCreated)=>{
-        if(err){
-            console.log(err);
-        }
-        else{
-            // redirect back to climbing page
-            res.redirect("/climbinggyms");
-        }
-    })
-})
-
-
-//NEW - show form to create new climbing gym 
-app.get('/climbinggyms/new', (req, res)=> {
-    res.render('climbinggyms/new');
-})
-
-//SHOW
-app.get('/climbinggyms/:id', (req, res)=>{
-    //find the climbing gym with provided ID
-    //render show the template 
-
-    Climbinggym.findById(req.params.id).populate("comments").exec( (err, foundClimbingGym)=>{
-        if(err){
-            console.log(err);
-        }
-        else{
-            console.log(foundClimbingGym);
-            res.render('climbinggyms/show', {gyms: foundClimbingGym});
-        }
-    })
-})
-
-//=======================================
-//COMMENT ROUTES
-//=======================================
-
-app.get('/climbinggyms/:id/comments/new', (req, res)=>{
-
-    Climbinggym.findById(req.params.id, (err, foundClimbingGym)=>{
-        if(err){
-            console.log(err);
-        }
-        else{
-            res.render('comments/new', {climbinggym: foundClimbingGym});
-        }
-    })
-})
-
-app.post('/climbinggyms/:id/comments', (req, res)=>{
-    Climbinggym.findById(req.params.id, (err, foundClimbingGym)=>{
-        if(err){
-            console.log(err);
-            res.redirect('climbinggyms');
-        }
-        else{
-            Comment.create(req.body.comment, (err, comment)=>{
-                if(err){
-                    console.log(err);
-                }
-                else{
-                    foundClimbingGym.comments.push(comment);
-                    foundClimbingGym.save();
-                    res.redirect('/climbinggyms/' +foundClimbingGym._id );
-                }
-            })
-        }
-    })
-})
+app.use('/climbinggyms', climbinggymRoutes);
+app.use('/climbinggyms/:id/comments', commentRoutes);
+app.use(authRoutes);
 
 app.listen(port, function(){ 
     console.log('YelpProject app is listening.')

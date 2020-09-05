@@ -1,0 +1,30 @@
+<%- include('../partials/header')%>
+
+<div class="container">
+    <div style ="width: 70%;">
+        <div class="row" id="form title" >
+            <h1 style="text-align: center;" >Edit <%= climbinggym.name%></h1>
+        </div> 
+        <form action="/climbinggyms/<%= climbinggym._id%>?_method=PUT" method="POST">
+            <div class="form-gorup" style="margin: 20px auto;">
+                
+                <input class="form-control" type="text" name="climbinggym[name]"  value = "<%= climbinggym.name%>">
+            </div>
+            <div class="form-gorup" style="margin: 20px auto;">
+                
+                <input class="form-control" type="text" name="climbinggym[image]" value = "<%= climbinggym.image%>">
+            </div>
+            <div class="form-gorup" style="margin: 20px auto;">
+                
+                <input class="form-control" type="text" name="climbinggym[description]" value = "<%= climbinggym.description%>">
+            </div>
+    
+            <div class="form-group">
+                <button class="btn btn-lg btn-outline-dark btn-block">Submit</button>
+            </div>
+            <a href="/climbinggyms">Go Back</a>
+        </form>
+    </div>
+</div>
+
+<%- include('../partials/footer')%>
