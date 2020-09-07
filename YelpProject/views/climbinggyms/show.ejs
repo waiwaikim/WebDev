@@ -22,7 +22,7 @@
                     <p> <em>Submitted by <%= gyms.author.username%></em></p>
 
                     <% if(currentUser && gyms.author.id.equals(currentUser._id)){ %>
-                        <a href="/climbinggyms/<%=gyms._id%>/edit" class="btn btn-info">Edit</a>
+                        <a href="/climbinggyms/<%=gyms._id%>/edit" class="btn btn-warning">Edit</a>
                         <form class="delete-form" action="/climbinggyms/<%=gyms._id%>?_method=DELETE" method="POST">
                             <button class="btn btn-danger">Delete</button>
                         </form>

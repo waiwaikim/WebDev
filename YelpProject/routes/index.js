@@ -20,38 +20,33 @@ router.post('/register', (req, res)=>{
     const newUser = new User({username: req.body.username });
     User.register(newUser, req.body.password, (err, user)=>{
         if(err){
-            console.log(err);
-            return res.render('register');
+            req.flash('error_message', err.message);
+            res.redirect('register');
         }
         passport.authenticate('local')(req, res, function(){
+            req.flash('success_message', 'Welcome to Climbing Journal ' + user.username);
             res.redirect('/climbinggyms');
         })
     })
 });
 
 router.get('/login', (req, res)=>{
-    res.render('login');
+    res.render('login' );
 });
 
 router.post('/login', passport.authenticate("local", {
     successRedirect: '/climbinggyms' , 
-    failureRedirect: '/login'
+    failureRedirect: '/login',
+    failureFlash: true
 }) ,(req, res)=>{
-    res.send('login sned');
+    res.send('login send');
 });
 
 router.get('/logout', (req, res)=>{
     req.logout();
+    req.flash('success_message', 'Logged You Out!');
     res.redirect('/climbinggyms');
 });
 
-function isLoggedIn(req, res, next){
-    if(req.isAuthenticated()){
-        return next();
-    } 
-    else{
-        res.render('login');
-    }
-};
 
 module.exports = router; 

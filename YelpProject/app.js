@@ -4,6 +4,8 @@ const express = require('express'),
       bodyParser = require('body-parser'),
       mongoose = require('mongoose'),
       seedDB = require('./seeds'),
+      cookieParser = require('cookie-parser'),
+      flash = require('connect-flash'),
       passport = require('passport'),
       LocalStrategy = require('passport-local'),
       session = require('express-session'),
@@ -22,6 +24,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(__dirname + '/public'));
 app.use(methodOverride('_method'));
+app.use(cookieParser('secret'));
 
 //===============PASSPORT CONFIGURATION ====================
 app.use(session({
@@ -34,6 +37,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+app.use(flash());
+
 
 
 //seedDB();
@@ -49,8 +54,10 @@ mongoose.connect('mongodb://localhost:27017/yelp_camp',{
 
 app.use(function(req, res, next){
     res.locals.currentUser = req.user; 
+    res.locals.error_message = req.flash('error_message');
+    res.locals.success_message = req.flash('success_message');
     next();
-})
+});
 
 app.use('/climbinggyms', climbinggymRoutes);
 app.use('/climbinggyms/:id/comments', commentRoutes);

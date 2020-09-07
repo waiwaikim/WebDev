@@ -1,5 +1,6 @@
 const express = require('express'),
-      Climbinggym = require('../models/climbinggym');
+      Climbinggym = require('../models/climbinggym')
+      middleWare = require('../middleware');
 const router =  express.Router(); 
 
 //INDEX
@@ -18,7 +19,7 @@ router.get('/', (req, res)=>{
     });
     
 //CREATE
-router.post('/', isLoggedIn,(req, res)=> {
+router.post('/', middleWare.isLoggedIn,(req, res)=> {
     const name = req.body.name;
     const url = req.body.image; 
     const desc = req.body.description;
@@ -44,7 +45,7 @@ router.post('/', isLoggedIn,(req, res)=> {
 
 
 //NEW - show form to create new climbing gym 
-router.get('/new', isLoggedIn, (req, res)=> {
+router.get('/new',  middleWare.isLoggedIn, (req, res)=> {
     res.render('climbinggyms/new');
 });
 
@@ -65,7 +66,7 @@ router.get('/:id', (req, res)=>{
 });
 
 //EDIT
-router.get('/:id/edit', climbinggymOwnership, (req,res)=>{
+router.get('/:id/edit',  middleWare.climbinggymOwnership, (req,res)=>{
 
     Climbinggym.findById(req.params.id, (err, foundClimbingGym)=>{
         if(err){
@@ -79,64 +80,30 @@ router.get('/:id/edit', climbinggymOwnership, (req,res)=>{
 });
 
 //UDPATE
-router.put('/:id', climbinggymOwnership, (req, res)=>{
+router.put('/:id',  middleWare.climbinggymOwnership, (req, res)=>{
     Climbinggym.findByIdAndUpdate(req.params.id, req.body.climbinggym, (err, updatedGym)=>{
         if(err){
             console.log(err);
             res.redirect('/climbinggyms');
         }
         else{
+            req.flash('success_message', 'You have successfully edited the post.');
             res.redirect('/climbinggyms/' + req.params.id);
         }
     })
 });
 
 //DELTE 
-router.delete('/:id', climbinggymOwnership, (req,res)=>{
+router.delete('/:id',  middleWare.climbinggymOwnership, (req,res)=>{
     Climbinggym.findByIdAndDelete(req.params.id, (err)=>{
         if(err){
             res.redirect('/climbinggyms');
         } else {
+            req.flash('success_message', 'You have successfully deleted the post.');
             res.redirect('/climbinggyms');
         }
     })
 });
-
-
-
-//MIDDLE WARE
-function isLoggedIn(req, res, next){
-    if(req.isAuthenticated()){
-        return next();
-    } 
-    else{
-        res.render('login');
-    }
-};
-
-function climbinggymOwnership(req, res, next){
-    if(req.isAuthenticated()){
-        Climbinggym.findById(req.params.id, (err, foundClimbingGym)=>{
-            if(err){
-                console.log(err);
-                res.redirect('back');
-            }
-            else{
-                if(foundClimbingGym.author.id.equals(req.user._id)){
-                    next();
-                }
-                else{
-                    console.log('you do not own this');
-                    res.redirect('back');
-                }
-            }
-        })
-    } else {
-        console.log('you must be logged in');
-        res.redirect('back');
-    }
-};
-
 
 
 module.exports = router; 
